@@ -38,6 +38,8 @@ export class BivariatePolynomial {
   transpose():BivariatePolynomial {return new BivariatePolynomial(Array.from({length:this.degreeV+1},(_,j)=>Array.from({length:this.degreeU+1},(_,i)=>this.coefficient(i,j))));}
   equals(other:BivariatePolynomial):boolean{return this.rows.length===other.rows.length&&this.rows.every((row,i)=>row.equals(other.rows[i]!));}
   evaluateAlgebraic(u:AlgebraicReal,v:AlgebraicReal):AlgebraicReal {
+    if(this.degreeU<=0)return v.rationalFunction(this.row(0));
+    if(this.degreeV<=0)return u.rationalFunction(new Polynomial(this.rows.map(row=>row.coefficient(0))));
     if(u.rational!==null)return v.rationalFunction(this.specializeU(u.rational));
     if(v.rational!==null)return u.rationalFunction(this.specializeV(v.rational));
     if(u.compare(v)===0)return u.rationalFunction(this.diagonal());
