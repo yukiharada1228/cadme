@@ -914,7 +914,7 @@ split.continuous; // 両側の境界曲線が同じパラメータで一致
 両方向のノット挿入・分割・反転に対応します。不連続なノットでは`uSide`／`vSide`を指定できます。
 法線がゼロの点は`regular: false`を返します。曲面全体の埋め込みや面としての有効性を認定する値ではありません。
 `nurbsSurfacePlaneEquations3`は平面との交差を表す厳密な多項式を返し、`nurbsSurfaceOnPlane3`は曲面全体の平面所属を判定します。
-交線の抽出・接続、トリムされたB-rep面、商用CAD形式の入出力は今後の開発です。
+パッチごとの平面断面の追跡は後述します。トリムされたB-rep面と商用CAD形式の入出力は今後の開発です。
 現在の`Surface3`とは別のパラメトリック形状APIです。[計算法・検証範囲](docs/proofs/nurbs-surface3.md)を参照してください。
 
 ```sh
@@ -939,9 +939,34 @@ result.points.length; // 2: (±sqrt(1/2), ±sqrt(1/2))、同符号
 `gcdBivariate`・`divideBivariateExact`・`resultantBivariate`も利用できます。
 共通因子には実曲線だけでなく、実点を持たない式や孤立した実点を表す式も含まれます。
 共通因子の実ゼロ集合の形状・接続はまだ展開せず、その内部の孤立点も暗黙的な式に保持します。
-交線の追跡やB-repへの接続には追加の処理が必要です。[計算法・完全性・検証範囲](docs/proofs/bivariate-system.md)を参照してください。
+矩形内のゼロ集合の追跡は後述します。B-repへの接続には追加の処理が必要です。[計算法・完全性・検証範囲](docs/proofs/bivariate-system.md)を参照してください。
 
 ```sh
 npm run build
 node examples/bivariate-system.ts
+```
+
+## 代数曲線の接続とNURBS曲面の平面断面
+
+`traceAlgebraicCurve2`は有理数の矩形内で、暗黙的な曲線を厳密な頂点・枝・接続成分へ分解します。
+垂直成分、交差、尖点、孤立点、境界上だけの接触も保持します。枝は根の順位で表す暗黙曲線で、直線近似ではありません。
+
+```ts
+const graph = traceAlgebraicCurve2(circle, {
+  uMin: -2n, uMax: 2n, vMin: -2n, vMax: 2n,
+});
+graph.components.length; // 1: 円周
+const section = intersectNurbsSurfacePlane3(surface, plane3(0n, 0n, 1n, '-1/4'));
+const p = nurbsPlaneSectionEdgePoint3(section, 0, 0, '1/2');
+```
+
+`intersectNurbsSurfacePlane3`はパッチごとのパラメータ空間のグラフと、平面上に含まれるパッチを返します。
+一点だけの接触も頂点として保持します。辺の評価引数は通常の枝では`u`、垂直成分では`v`です。
+パッチ境界の統合、空間上の自己重複の解決、トリムされたB-rep面への接続は今後の開発です。
+パラメータ空間の接続成分を、そのまま空間上の接続成分とは認定しません。
+[構成・完全性・検証範囲](docs/proofs/algebraic-curve-topology2.md)を参照してください。
+
+```sh
+npm run build
+node examples/nurbs-plane-section3.ts
 ```

@@ -6,7 +6,7 @@
     "src/geometry/point2.ts": "a270ddbf2e31f1484c4ce5d1c6063270762eb38d12597b88f182abcac2f73720",
     "src/geometry/segment-intersection.ts": "d8ef28382ec750e9c15c525099750b1f5cfa5b70cdb0bd738ddb9de666119a10",
     "src/geometry/split-segments.ts": "31ed98ff6bb73e9052cfab8a768b635265feacc4d8e80172f9baffbc28a290ec",
-    "src/index.ts": "e6df2b46644688f17e957dfffcfa5a9deb0a9ea640511229ffd3243aa0c3742f",
+    "src/index.ts": "a45c301e4fe0e4cb39dd0009be28a4d5cef49da8ceb16fbbfdbf14f564f35b69",
     "src/numeric/rational.ts": "1fa7b80f2a85aadec80de904ae0e848f4b1db59a6fb4fb04829e7c00fb2f6710",
     "src/geometry/half-edges.ts": "3c983bc7e023ae735692b664c1f4d82950a8dc3e9b894cf95bbf4b324ad304f6",
     "src/geometry/faces.ts": "29f68746129154f1a6fc16bd44a8db71393de443ee583aff401b1436c4274547",
@@ -27,7 +27,7 @@
     "src/geometry/surface-location3.ts": "367745afeff743741bfa3851d54455723bdff32f4dd1271744bba8d4ac1e0094",
     "src/geometry/solid-boolean3.ts": "2354a04904c94c4003bfb6621659666ec5cc9fcc543f84bca447507d0454b2f1",
     "src/numeric/polynomial.ts": "54a4d89dff48a4ebd4e2825cd80532616a433cb7c010dd5635c83ab7dbb51650",
-    "src/numeric/real-roots.ts": "710293002805e754a20a2a6b7b398803976696f51b7a93a23c005802aa664479",
+    "src/numeric/real-roots.ts": "65065ca87f639485831d7a0ba4abb00e6efa0ee3ce09eb469d52f6835f6b09e1",
     "src/geometry/algebraic-point2.ts": "f26fc55bd108af49edd944dad81cb8478bdd06826a4b1b7503f99885a1704dec",
     "src/geometry/circle2.ts": "29443ea2c7508f0011a8c1c37926b61bca7453fc853c519d7e4700bdcdf473b4",
     "src/numeric/resultant.ts": "f3756924c33ec134fcca49f722fd47a79292df6fb827133f7e4c6df702961545",
@@ -62,9 +62,11 @@
     "src/geometry/convex-section-polygon3.ts": "7073ec307dc471fbd9ece6b9345cd6466e0e8e3cb90543a782b374d13bd12843",
     "src/geometry/clipped-cylinder-split3.ts": "884fb3ad64d96ca5f745ac706f2ca934c3851e8ec19eb1ec8b321212aa861744",
     "src/geometry/nurbs-curve3.ts": "dec7d701dff5e65bfebb5147fff29855197c96b22294c8213c22c166f39b6bc1",
-    "src/numeric/bivariate-polynomial.ts": "ad3b037784ff87034b6a55c53ffd30ecfea5fd9509bc037cc5d8d6e3fcc4646b",
+    "src/numeric/bivariate-polynomial.ts": "f4c0e6d3d67dbf0331fa23bcc110fcce92e0f125d87205732b8e22b5e2a587f6",
     "src/geometry/nurbs-surface3.ts": "5e1dbbbdf4c6a2fa3e6b6bcbc5e4069e00b154e4ea4ce9220d482b3e159f5d04",
-    "src/numeric/bivariate-system.ts": "50148923e92fd87b442a35ab4a4a8c27b9c1c3eecc1ff062148dd891416018e8"
+    "src/numeric/bivariate-system.ts": "a6dba0acb55ecdfa1a7879f709eb9f27cf3d500821c2bbb772bedbded7acffb6",
+    "src/geometry/nurbs-plane-section3.ts": "639a2c3bc556df62d52d3f863b5318f4a38af1c319730d184606f43e97aed515",
+    "src/geometry/algebraic-curve-topology2.ts": "53dd30141ca3318a545147115218c7fa170720e00c54aee6f6f89e0ae99ad9e4"
   },
   "checkedTheorems": [
     "Cadloom.gcdLoop_correct",
@@ -238,6 +240,7 @@
     "Closed convex cylinder/halfspace plane splits, common-cap edge correspondence, face provenance, exact boundary-extrema plane classification and supporting contacts and inverse-split boundary rejoining use documented arguments and independent tests, not full TypeScript verification. This does not implement arbitrary solid union or cylinder/cylinder intersections.",
     "Rational positive-weight nonperiodic NURBS span compilation, one-sided evaluation/derivatives, rational knot insertion/splitting/reversal and exact plane intersections use documented arguments and independent polynomial-basis/shape tests, not full TypeScript verification. The generic positive-blend lemma is checked in Lean; full basis refinement, compiler/runtime semantics, NURBS surfaces, general curve intersections and BRep integration remain outside scope.",
     "Positive rational tensor-product NURBS surfaces, bivariate polynomial arithmetic, algebraic evaluation, partials/local normals, rational isocurves, direction-wise refinement/splitting/reversal and exact plane restriction/containment use documented arguments and independent tensor-coefficient/shape tests. Existing positive-blend mathematics is reused; TypeScript execution, global regularity/embedding, zero-set tracing, trimmed BRep integration and file import are not proved or supplied by this layer.",
-    "Exact bivariate division, primitive-PRS gcd, fraction-free resultants, nonminimal-certificate fiber norm lifting and isolated residual system roots use documented algebraic arguments and independent determinant/known-root tests, not full TypeScript verification. Shared zero loci remain implicit, including any real isolated points within them; multiplicities, topology tracing, trimming and NURBS/BRep intersection assembly are not supplied."
+    "Exact bivariate division, primitive-PRS gcd, fraction-free resultants, nonminimal-certificate fiber norm lifting and isolated residual system roots use documented algebraic arguments and independent determinant/known-root tests, not full TypeScript verification. Shared zero loci remain implicit in the system solver, including any real isolated points within them; bounded tracing is a separate API. Multiplicities, arbitrary trim domains and global NURBS/BRep intersection assembly remain outside the system solver.",
+    "Bounded algebraic zero-locus graphs, exact event fibers, separator-certified branch adjacency, rational recognition by continued fractions and patch-wise NURBS plane sections use documented construction arguments and independent graph/set/analytic fixtures, not machine-verified TypeScript execution. Components are in parameter space; patch seam welding, spatial embedding, analytic germ pairing, oriented trimmed faces and BRep sewing remain future work."
   ]
 }

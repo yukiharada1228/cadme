@@ -111,6 +111,25 @@ export class AlgebraicReal {
     return value===this.polynomial.evaluate(this.lower).sign()?
       new AlgebraicReal(this.polynomial,mid,this.upper):new AlgebraicReal(this.polynomial,this.lower,mid);
   }
+  /** Recover an exact rational root, even from a nonminimal certificate.
+   * Acceptance checks the polynomial and isolating interval; otherwise an
+   * equivalent refined root is returned. No numeric tolerance is used.
+   */
+  recognizeRational():AlgebraicReal {
+    if(this.rational!==null)return this;
+    const gcd=(inputA:bigint,inputB:bigint)=>{let a=inputA,b=inputB;while(b!==0n)[a,b]=[b,a%b];return a;};
+    let commonDenominator=1n;for(const c of this.polynomial.coefficients)commonDenominator=commonDenominator/gcd(commonDenominator,c.denominator)*c.denominator;
+    const leading=this.polynomial.coefficients[this.polynomial.degree]!,integerLeading=leading.numerator*(commonDenominator/leading.denominator),bound=integerLeading<0n?-integerLeading:integerLeading,threshold=new Rational(1n,2n*bound*bound);
+    let root:AlgebraicReal=this;while(root.upper.sub(root.lower).compare(threshold)>=0)root=root.refine();if(root.rational!==null)return root;
+    const midpoint=root.lower.add(root.upper).div(new Rational(2n));let n=midpoint.numerator,d=midpoint.denominator,p0=0n,p1=1n,q0=1n,q1=0n;
+    while(d!==0n){
+      let a=n/d;if(n<0n&&n%d!==0n)a--;const r=n-a*d,p=a*p1+p0,q=a*q1+q0;if(q>bound)break;
+      const candidate=new Rational(p,q);
+      if(candidate.compare(root.lower)>0&&candidate.compare(root.upper)<0&&root.polynomial.evaluate(candidate).sign()===0)return AlgebraicReal.fromRational(candidate);
+      [p0,p1,q0,q1]=[p1,p,q1,q];[n,d]=[d,r];
+    }
+    return root;
+  }
   /** Exact rational affine image scale*this + offset, including zero/negative scale. */
   affine(scaleInput:ExactInput,offsetInput:ExactInput=0n):AlgebraicReal {
     const scale=exactRational(scaleInput),offset=exactRational(offsetInput);

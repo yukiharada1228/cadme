@@ -3,6 +3,7 @@ import {Polynomial} from './polynomial.js';
 import {BivariatePolynomial} from './bivariate-polynomial.js';
 import {AlgebraicReal,isolateRealRoots} from './real-roots.js';
 import {resultantInParameter} from './resultant.js';
+import type {ExactInput} from '../geometry/point2.js';
 
 const zero=new Polynomial();
 export interface BivariateRoot {readonly u:AlgebraicReal;readonly v:AlgebraicReal;}
@@ -71,6 +72,26 @@ function fiberCandidates(f:BivariatePolynomial,u:AlgebraicReal):readonly Algebra
   const p=division.quotient,norm=resultantInParameter(p.coefficients.map(c=>new Polynomial([c])),f.rows);
   if(norm.degree<0)throw new Error('A nonzero fiber must have a nonzero norm polynomial');
   return isolateRealRoots(norm);
+}
+export type BivariateFiberRoots =
+  | {readonly kind:'whole';readonly roots:readonly AlgebraicReal[]}
+  | {readonly kind:'finite';readonly roots:readonly AlgebraicReal[]};
+/** Complete distinct real roots in v at the specified exact u coordinate. */
+export function bivariateFiberRoots(f:BivariatePolynomial,inputU:AlgebraicReal|ExactInput):BivariateFiberRoots {
+  const u=(inputU instanceof AlgebraicReal?inputU:AlgebraicReal.fromRational(inputU)).recognizeRational(),coefficients=coefficientsV(f),degree=specializedDegree(coefficients,u);
+  if(degree<0)return Object.freeze({kind:'whole',roots:Object.freeze([])});
+  if(degree===0)return Object.freeze({kind:'finite',roots:Object.freeze([])});
+  if(degree===1)return Object.freeze({kind:'finite',roots:Object.freeze([u.rationalFunction(coefficients[0]!.neg(),coefficients[1]!)])});
+  if(degree===2){
+    const A=coefficients[2]!,B=coefficients[1]!,C=coefficients[0]!,D=B.mul(B).sub(A.mul(C).scale(4n)),delta=u.rationalFunction(D),sign=delta.sign();
+    if(sign<0)return Object.freeze({kind:'finite',roots:Object.freeze([])});
+    const denominator=A.scale(2n);
+    if(sign===0)return Object.freeze({kind:'finite',roots:Object.freeze([u.rationalFunction(B.neg(),denominator)])});
+    const root=delta.sqrt(),roots:AlgebraicReal[]=root.rational!==null?[-1n,1n].map(s=>u.rationalFunction(B.neg().add(new Polynomial([root.rational!.mul(new Rational(s))])),denominator)):[-1n,1n].map(s=>u.rationalFunction(B).neg().add(root.affine(s)).div(u.rationalFunction(denominator)));
+    return Object.freeze({kind:'finite',roots:Object.freeze(roots.sort((a,b)=>a.compare(b)))});
+  }
+  const roots=fiberCandidates(f,u).map(v=>v.recognizeRational()).filter(v=>f.evaluateAlgebraic(u,v).sign()===0).sort((a,b)=>a.compare(b));
+  return Object.freeze({kind:'finite',roots:Object.freeze(roots.filter((v,i)=>i===0||v.compare(roots[i-1]!)!==0))});
 }
 /** Solve two rational bivariate equations over all real coordinates. Shared
  * zero loci are retained implicitly; isolated residual points are exact.

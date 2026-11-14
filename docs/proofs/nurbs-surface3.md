@@ -62,8 +62,8 @@ F=nxX+nyY+nzZ+dW. Since W>0, F=0 is exactly the preimage of the plane.
 `nurbsSurfaceOnPlane3` checks that every F is the zero polynomial. A nonzero
 polynomial cannot vanish on a whole positive-area parameter rectangle, so
 this is an exact whole-surface containment criterion, including degenerate
-parameterizations. Returning F does not isolate, trace or assemble its
-zero-set topology and is not a complete surface/plane intersection API.
+parameterizations. Returning F does not itself trace its zero set. Complete closed patch-wise
+plane sections are supplied separately by [curve topology](algebraic-curve-topology2.md).
 
 Tests use independent Cox basis products to compare every coefficient for
 mixed degrees through (3,3), then compare whole homogeneous patches after
@@ -75,7 +75,7 @@ arithmetic is compared to direct coefficient sums and algebraic identities.
 
 This is parameterized geometry, separate from the existing `Surface3`/BRep
 surface variants. Trimmed faces, self-intersection/embedding certification,
-intersection-curve topology, shell sewing and commercial file import remain
+global spatial intersection topology, shell sewing and commercial file import remain
 future work. The TypeScript implementation is not formally verified.
 
 Algorithm references: Michigan Tech's [tensor-product de Boor evaluation](https://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/surface/bspline-de-boor.html)
