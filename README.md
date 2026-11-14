@@ -883,11 +883,41 @@ hit.points[0].branches[0].multiplicity; // 2: この曲線では接触
 
 ノットの最大重複度は次数+1です。不連続点では`'left'`／`'right'`で評価する側を選べます。
 交差結果はノットの両側の点と重複度、平面上に含まれる区間を保持します。
-自由曲線のB-rep接続、曲線同士の交差、NURBS曲面、商用CAD形式の入出力は今後の開発です。
+自由曲線のB-rep接続、曲線同士の交差、商用CAD形式の入出力は今後の開発です。NURBS曲面の幾何APIは後述します。
 現在の`Curve3`とは別のパラメトリック形状APIです。
 [計算法・検証範囲](docs/proofs/nurbs-curve3.md)を参照してください。
 
 ```sh
 npm run build
 node examples/nurbs-curve3.ts
+```
+
+## 厳密なNURBS曲面
+
+`nurbsSurface3`は`[u][v]`の制御点と正の有理数重みから、非周期のテンソル積NURBS曲面を構築します。
+各ノット長方形を2変数の同次多項式として保持し、有理数・代数的実数での評価、偏微分、非単位法線を計算します。
+
+```ts
+const surface = nurbsSurface3(
+  1, 1,
+  [[point3(0n, 0n, 0n), point3(0n, 1n, 0n)],
+   [point3(1n, 0n, 0n), point3(1n, 1n, 1n)]],
+  [0n, 0n, 1n, 1n], [0n, 0n, 1n, 1n],
+);
+evaluateNurbsSurface3(surface, '1/2', '1/2'); // (1/2, 1/2, 1/4)
+differentialNurbsSurface3(surface, '1/2', '1/2').regular; // この点ではtrue
+const iso = nurbsSurfaceIsoCurve3(surface, 'u', '1/2'); // uを固定し、vが動く曲線
+const split = splitNurbsSurface3(surface, 'u', '1/2');
+split.continuous; // 両側の境界曲線が同じパラメータで一致
+```
+
+両方向のノット挿入・分割・反転に対応します。不連続なノットでは`uSide`／`vSide`を指定できます。
+法線がゼロの点は`regular: false`を返します。曲面全体の埋め込みや面としての有効性を認定する値ではありません。
+`nurbsSurfacePlaneEquations3`は平面との交差を表す厳密な多項式を返し、`nurbsSurfaceOnPlane3`は曲面全体の平面所属を判定します。
+交線の抽出・接続、トリムされたB-rep面、商用CAD形式の入出力は今後の開発です。
+現在の`Surface3`とは別のパラメトリック形状APIです。[計算法・検証範囲](docs/proofs/nurbs-surface3.md)を参照してください。
+
+```sh
+npm run build
+node examples/nurbs-surface3.ts
 ```

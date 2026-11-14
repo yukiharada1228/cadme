@@ -73,7 +73,9 @@ export function nurbsCurveSpans3(input:NurbsCurve3):readonly NurbsSpan3[] {
   }
   const result=Object.freeze(spans);compiled.set(curve,result);return result;
 }
-function selectSpan(curve:NurbsCurve3,t:AlgebraicReal,side:NurbsKnotSide3):NurbsSpan3 {
+/** Internal shared one-sided span selection for tensor-product geometry. */
+export function selectNurbsSpan3(input:NurbsCurve3,t:AlgebraicReal,side:NurbsKnotSide3):NurbsSpan3 {
+  const curve=snapshot(input);
   if(side!=='left'&&side!=='right')throw new RangeError('Knot side must be left or right');
   if(t.compare(AlgebraicReal.fromRational(curve.startParameter))<0||t.compare(AlgebraicReal.fromRational(curve.endParameter))>0)throw new RangeError('NURBS parameter is outside the active domain');
   const spans=nurbsCurveSpans3(curve);
@@ -88,11 +90,11 @@ function image(t:AlgebraicReal,N:Polynomial,W:Polynomial):AlgebraicReal {
 }
 function spanPoint(s:NurbsSpan3,t:AlgebraicReal):AlgebraicCoordinates3 {return algebraicCoordinates3(image(t,s.x,s.weight),image(t,s.y,s.weight),image(t,s.z,s.weight));}
 export function evaluateNurbsCurve3(input:NurbsCurve3,parameter:AlgebraicReal|ExactInput,side:NurbsKnotSide3='right'):AlgebraicCoordinates3 {
-  const curve=snapshot(input),t=parameter instanceof AlgebraicReal?parameter:AlgebraicReal.fromRational(parameter);return spanPoint(selectSpan(curve,t,side),t);
+  const curve=snapshot(input),t=parameter instanceof AlgebraicReal?parameter:AlgebraicReal.fromRational(parameter);return spanPoint(selectNurbsSpan3(curve,t,side),t);
 }
 /** Exact one-sided derivative with respect to the original parameter. */
 export function derivativeNurbsCurve3(input:NurbsCurve3,parameter:AlgebraicReal|ExactInput,side:NurbsKnotSide3='right'):AlgebraicCoordinates3 {
-  const curve=snapshot(input),t=parameter instanceof AlgebraicReal?parameter:AlgebraicReal.fromRational(parameter),s=selectSpan(curve,t,side),W=s.weight,Wp=W.derivative(),denominator=W.mul(W);
+  const curve=snapshot(input),t=parameter instanceof AlgebraicReal?parameter:AlgebraicReal.fromRational(parameter),s=selectNurbsSpan3(curve,t,side),W=s.weight,Wp=W.derivative(),denominator=W.mul(W);
   const derivative=(N:Polynomial)=>image(t,N.derivative().mul(W).sub(N.mul(Wp)),denominator);
   return algebraicCoordinates3(derivative(s.x),derivative(s.y),derivative(s.z));
 }

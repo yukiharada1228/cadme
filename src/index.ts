@@ -117,3 +117,7 @@ export type { CylinderSplitEdgeMap3, CylinderSplitInterface3, ClippedCylinderPla
 
 export { nurbsCurve3, nurbsCurveSpans3, evaluateNurbsCurve3, derivativeNurbsCurve3, insertNurbsKnot3, splitNurbsCurve3, reverseNurbsCurve3, intersectNurbsPlane3 } from './geometry/nurbs-curve3.js';
 export type { NurbsCurve3, NurbsSpan3, NurbsKnotSide3, NurbsPlanePoint3, NurbsPlaneIntersection3 } from './geometry/nurbs-curve3.js';
+
+export { BivariatePolynomial } from './numeric/bivariate-polynomial.js';
+export { nurbsSurface3, nurbsSurfacePatches3, evaluateNurbsSurface3, differentialNurbsSurface3, nurbsSurfaceIsoCurve3, insertNurbsSurfaceKnot3, splitNurbsSurface3, reverseNurbsSurface3, nurbsSurfacePlaneEquations3, nurbsSurfaceOnPlane3 } from './geometry/nurbs-surface3.js';
+export type { NurbsDirection3, NurbsSurfaceSides3, NurbsSurface3, NurbsSurfacePatch3, NurbsSurfaceDifferential3, NurbsSurfaceSplit3 } from './geometry/nurbs-surface3.js';
