@@ -169,3 +169,5 @@ import SortedAdjacency
 #print axioms Cadloom.cylinder_radial_contraction
 
 #print axioms Cadloom.ellipse_support_identity
+
+#print axioms Cadloom.homogeneous_positive_blend

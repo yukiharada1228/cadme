@@ -861,3 +861,33 @@ if (split.kind === 'split') {
 npm run build
 node examples/clipped-cylinder-split3.ts
 ```
+
+## 厳密なNURBS曲線
+
+`nurbsCurve3`は有理数の制御点・正の重み・ノット列から非周期NURBS曲線を構築します。
+有理数と代数的実数のパラメータでの評価、片側微分、ノット挿入、分割、反転、平面との交差を扱います。
+各区間を同次座標の多項式として計算し、交差パラメータは実根分離で求めます。
+
+```ts
+const curve = nurbsCurve3(
+  2,
+  [point3(1n, 0n, 0n), point3(1n, 1n, 0n), point3(0n, 1n, 0n)],
+  [0n, 0n, 0n, 1n, 1n, 1n],
+  [1n, 1n, 2n],
+);
+const p = evaluateNurbsCurve3(curve, '1/2'); // (3/5, 4/5, 0): 厳密な単位円の一部
+const split = splitNurbsCurve3(curve, '1/2'); // 元のパラメータを保持
+const hit = intersectNurbsPlane3(curve, plane3(3n, 4n, 0n, -5n));
+hit.points[0].branches[0].multiplicity; // 2: この曲線では接触
+```
+
+ノットの最大重複度は次数+1です。不連続点では`'left'`／`'right'`で評価する側を選べます。
+交差結果はノットの両側の点と重複度、平面上に含まれる区間を保持します。
+自由曲線のB-rep接続、曲線同士の交差、NURBS曲面、商用CAD形式の入出力は今後の開発です。
+現在の`Curve3`とは別のパラメトリック形状APIです。
+[計算法・検証範囲](docs/proofs/nurbs-curve3.md)を参照してください。
+
+```sh
+npm run build
+node examples/nurbs-curve3.ts
+```
