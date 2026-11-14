@@ -84,7 +84,8 @@ General field arithmetic, resultants and primitive PRS can still cause
 large exact coefficients and expensive computations. There are no floating
 tolerances or fixed refinement limits. This implementation has construction
 arguments and independent tests, not machine-verified TypeScript execution.
-Tracing shared loci, clipping to trim domains, branch adjacency, singular
-curve topology and NURBS/BRep intersection assembly remain future work.
+Bounded zero-locus graphs and patch-wise NURBS plane sections are supplied
+separately by [curve topology](algebraic-curve-topology2.md). Arbitrary trim
+domains and global NURBS/BRep intersection assembly remain future work.
 
 Reference: [SymPy polynomial internals: primitive PRS and resultants](https://docs.sympy.org/latest/modules/polys/internals.html).

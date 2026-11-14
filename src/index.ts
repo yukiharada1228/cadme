@@ -124,3 +124,11 @@ export type { NurbsDirection3, NurbsSurfaceSides3, NurbsSurface3, NurbsSurfacePa
 
 export { divideBivariateExact, gcdBivariate, resultantBivariate, solveBivariateSystem } from './numeric/bivariate-system.js';
 export type { BivariateRoot, BivariateSystemSolutions } from './numeric/bivariate-system.js';
+
+export { bivariateFiberRoots } from './numeric/bivariate-system.js';
+export type { BivariateFiberRoots } from './numeric/bivariate-system.js';
+export { traceAlgebraicCurve2, evaluateAlgebraicCurveEdge2 } from './geometry/algebraic-curve-topology2.js';
+export type { CurveRectangle2, CurveEvent2, AlgebraicCurveVertex2, AlgebraicCurveEdge2, AlgebraicCurveTopology2 } from './geometry/algebraic-curve-topology2.js';
+
+export { intersectNurbsSurfacePlane3, nurbsPlaneSectionVertex3, nurbsPlaneSectionEdgePoint3 } from './geometry/nurbs-plane-section3.js';
+export type { NurbsPlaneSection3 } from './geometry/nurbs-plane-section3.js';
