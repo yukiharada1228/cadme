@@ -191,4 +191,15 @@ theorem ellipse_support_identity {K : Type*} [CommRing K] (A B a b x y : K) :
       (B*b*x-A*a*y)^2 := by
   ring
 
+/-- Homogeneous de Boor blending preserves a strictly positive denominator. -/
+theorem homogeneous_positive_blend {K : Type*} [Field K] [LinearOrder K]
+    [IsStrictOrderedRing K] (a u v : K) (ha0 : 0 ≤ a) (ha1 : a ≤ 1)
+    (hu : 0 < u) (hv : 0 < v) :
+    0 < (1-a)*u+a*v := by
+  by_cases h : a = 0
+  · simpa [h] using hu
+  · exact add_pos_of_nonneg_of_pos
+      (mul_nonneg (sub_nonneg.mpr ha1) (le_of_lt hu))
+      (mul_pos (lt_of_le_of_ne ha0 (Ne.symm h)) hv)
+
 end Cadloom

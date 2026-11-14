@@ -114,3 +114,6 @@ export { clipCylinderBRep3 } from './geometry/clipped-cylinder-brep3.js';
 export type { ClippedCylinderFace3, ClippedCylinderBRep3 } from './geometry/clipped-cylinder-brep3.js';
 export { splitClippedCylinderByPlane3, rejoinClippedCylinderSplit3 } from './geometry/clipped-cylinder-split3.js';
 export type { CylinderSplitEdgeMap3, CylinderSplitInterface3, ClippedCylinderPlaneSplit3, RejoinedCylinderSplit3 } from './geometry/clipped-cylinder-split3.js';
+
+export { nurbsCurve3, nurbsCurveSpans3, evaluateNurbsCurve3, derivativeNurbsCurve3, insertNurbsKnot3, splitNurbsCurve3, reverseNurbsCurve3, intersectNurbsPlane3 } from './geometry/nurbs-curve3.js';
+export type { NurbsCurve3, NurbsSpan3, NurbsKnotSide3, NurbsPlanePoint3, NurbsPlaneIntersection3 } from './geometry/nurbs-curve3.js';
