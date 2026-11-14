@@ -1,16 +1,13 @@
-import {point3,vector3,dot3} from './point3.js';
+import {dot3} from './point3.js';
 import type {Point3} from './point3.js';
 import {plane3} from './plane3.js';
 import type {Plane3} from './plane3.js';
-import {snapshotExactPoint3} from './algebraic-point3.js';
 import type {AlgebraicCoordinates3} from './algebraic-point3.js';
-import {evaluatePlaneAtAlgebraicPoint3 as evaluate} from './algebraic-segment-plane3.js';
 import {surfacesCoincide3} from './surface3.js';
-import {snapshotCurve3,reverseCurve3,pointOnCurve3} from './curve3.js';
+import {reverseCurve3} from './curve3.js';
 import type {Curve3} from './curve3.js';
-import {canonical} from './planar-trim-utils3.js';
-import {clipCylinderBRep3,assertOwnedClippedCylinder3} from './clipped-cylinder-brep3.js';
-import type {ClippedCylinderBRep3,ClippedCylinderFace3} from './clipped-cylinder-brep3.js';
+import {partitionClippedCylinderBRep3,assertOwnedClippedCylinder3} from './clipped-cylinder-brep3.js';
+import type {ClippedCylinderBRep3} from './clipped-cylinder-brep3.js';
 import type {PreparedTrimmedPlanar3} from './trimmed-planar3.js';
 import {sewBRepFaces3} from './sew-brep3.js';
 import type {SewnBRep3,SewBRepFace3} from './sew-brep3.js';
@@ -65,21 +62,6 @@ function planarFace(body:ClippedCylinderBRep3,plane:Plane3):number {
   const ids=body.faces.flatMap((f,i)=>f.kind==='planar'&&surfacesCoincide3({kind:'plane',plane:f.plane},{kind:'plane',plane})?[i]:[]);
   if(ids.length!==1)throw new Error('A genuine convex split must have exactly one planar interface face');return ids[0]!;
 }
-/** Supporting contact may occur inside an elliptic edge, not at an existing
- * vertex. For h=c+a*x+b*y on the ellipse, a zero extremum requires
- * c²=A*a²+B*b²; its point has exact rational coordinates.
- */
-function touches(body:ClippedCylinderBRep3,plane:Plane3):boolean {
-  if(body.topology.vertices.some(p=>evaluate(plane,p).sign()===0))return true;
-  for(const edge of body.topology.edges){
-    const c=canonical(snapshotCurve3(edge.curve));if(c.kind!=='elliptic-arc')continue;
-    const e=c.arc.ellipse,f=e.frame,a=dot3(plane.normal,f.u),b=dot3(plane.normal,f.v),offset=dot3(plane.normal,f.origin).add(plane.offset),S=e.radiusUSquared.mul(a.mul(a)).add(e.radiusVSquared.mul(b.mul(b)));
-    if(S.sign()===0||!offset.mul(offset).equals(S))continue;
-    const U=e.radiusUSquared.mul(a).div(S),V=e.radiusVSquared.mul(b).div(S),direction=vector3(f.u.x.mul(U).add(f.v.x.mul(V)),f.u.y.mul(U).add(f.v.y.mul(V)),f.u.z.mul(U).add(f.v.z.mul(V))),p=point3(f.origin.x.sub(direction.x.mul(offset)),f.origin.y.sub(direction.y.mul(offset)),f.origin.z.sub(direction.z.mul(offset)));
-    if(pointOnCurve3(p,c))return true;
-  }
-  return false;
-}
 function faceOrigins(parent:ClippedCylinderBRep3,child:ClippedCylinderBRep3,interfaceFace:number):readonly (number|null)[] {
   return Object.freeze(child.faces.map((face,i)=>{
     if(i===interfaceFace)return null;const sample=face.domain.components[face.component]!.sample;
@@ -101,12 +83,9 @@ function edgeMaps(body:ClippedCylinderBRep3,face:number,sourceUses:readonly (rea
 export function splitClippedCylinderByPlane3(input:ClippedCylinderBRep3,inputPlane:Plane3):ClippedCylinderPlaneSplit3 {
   assertOwnedClippedCylinder3(input);const plane=plane3(inputPlane.normal.x,inputPlane.normal.y,inputPlane.normal.z,inputPlane.offset);
   if(input.empty)return finish({kind:'empty',parent:input,plane,negative:input,positive:input,negativeFaceOrigins:identityFaces(input),positiveFaceOrigins:identityFaces(input),shared:null});
-  const prior=input.planes.map(plane=>({plane,side:-1 as const})),negative=clipCylinderBRep3(input.cylinder,input.lower,input.upper,[...prior,{plane,side:-1}]),positive=clipCylinderBRep3(input.cylinder,input.lower,input.upper,[...prior,{plane,side:1}]);
-  if(negative.empty||positive.empty){
-    if(negative.empty&&positive.empty)throw new Error('A nonempty solid cannot have two empty plane-split children');
-    const materialSide=negative.empty?1 as const:-1 as const,kind=touches(input,plane)?'touching' as const:'disjoint' as const;
-    if(evaluate(plane,snapshotExactPoint3(input.interiorSample!)).sign()!==materialSide)throw new Error('One-sided split disagrees with the parent interior witness');
-    return finish({kind,parent:input,plane,negative:negative.empty?negative:input,positive:positive.empty?positive:input,negativeFaceOrigins:negative.empty?Object.freeze([]):identityFaces(input),positiveFaceOrigins:positive.empty?Object.freeze([]):identityFaces(input),shared:null,materialSide});
+  const {negative,positive,relation}=partitionClippedCylinderBRep3(input,plane);
+  if(relation.kind!=='split'){
+    return finish({kind:relation.kind,parent:input,plane,negative,positive,negativeFaceOrigins:negative.empty?Object.freeze([]):identityFaces(input),positiveFaceOrigins:positive.empty?Object.freeze([]):identityFaces(input),shared:null,materialSide:relation.materialSide});
   }
   const N=planarFace(negative,plane),P=planarFace(positive,plane),n=negative.faces[N]!,p=positive.faces[P]!;
   if(n.kind!=='planar'||p.kind!=='planar')throw new Error('Split interface must be planar');

@@ -13,7 +13,7 @@ import type {AlgebraicCoordinates3} from './algebraic-point3.js';
 import {evaluatePlaneAtAlgebraicPoint3 as evaluate} from './algebraic-segment-plane3.js';
 import {intersectPlaneCylinder3} from './plane-cylinder3.js';
 import {circle3,circularArc3} from './circle3.js';
-import {planeFrame3,reverseCurve3} from './curve3.js';
+import {planeFrame3,reverseCurve3,pointOnCurve3} from './curve3.js';
 import type {Curve3} from './curve3.js';
 import {prepareCylinderFace3} from './cylinder-face3.js';
 import {prepareEllipseFace3,prepareRectangleFace3} from './planar-face3.js';
@@ -22,6 +22,7 @@ import {prepareTrimmedCylinder3} from './trimmed-cylinder3.js';
 import type {CylinderHalfSpace3,PreparedTrimmedCylinder3} from './trimmed-cylinder3.js';
 import {prepareTrimmedPlanar3} from './trimmed-planar3.js';
 import {convexSectionPolygon3} from './convex-section-polygon3.js';
+import {canonical} from './planar-trim-utils3.js';
 import type {PreparedTrimmedPlanar3} from './trimmed-planar3.js';
 import {sewBRepFaces3} from './sew-brep3.js';
 import type {SewnBRep3,SewBRepFace3} from './sew-brep3.js';
@@ -122,4 +123,57 @@ export function clipCylinderBRep3(input:Cylinder3,inputLower:ExactInput,inputUpp
     for(const plane of planes){const sign=evaluate(plane,p).sign();if(sign>0)return 'outside';if(sign===0)boundary=true;}return boundary?'boundary':'inside';
   };
   const result=Object.freeze({cylinder,lower,upper,planes:Object.freeze(all),empty,faces:Object.freeze(faces),topology,sewing,interiorSample,locate});ownedSolids.add(result);return result;
+}
+
+
+type CylinderPlaneRelation3 = {readonly kind:'split'} |
+  {readonly kind:'touching'|'disjoint';readonly materialSide:-1|1};
+/** Linear extrema of a convex cylinder/halfspace solid occur at vertices or
+ * stationary points of elliptic boundary edges. A stationary generator in a
+ * wall interior extends to the finite wall boundary with unchanged value.
+ * This is specific to the factory's convex analytic family, not arbitrary BReps.
+ */
+function planeRelation(input:ClippedCylinderBRep3,plane:Plane3):CylinderPlaneRelation3 {
+  let negative=false,positive=false,zero=false;
+  const record=(sign:number)=>{if(sign<0)negative=true;else if(sign>0)positive=true;else zero=true;};
+  for(const point of input.topology.vertices){record(evaluate(plane,point).sign());if(negative&&positive)return {kind:'split'};}
+  for(const edge of input.topology.edges){
+    const curve=canonical(edge.curve);if(curve.kind!=='elliptic-arc')continue;
+    const e=curve.arc.ellipse,f=e.frame,a=dot3(plane.normal,f.u),b=dot3(plane.normal,f.v),c=dot3(plane.normal,f.origin).add(plane.offset),S=e.radiusUSquared.mul(a.mul(a)).add(e.radiusVSquared.mul(b.mul(b)));
+    if(S.sign()===0)continue;
+    const root=AlgebraicReal.fromRational(S).sqrt(),U=e.radiusUSquared.mul(a).div(S),V=e.radiusVSquared.mul(b).div(S),direction=vector3(f.u.x.mul(U).add(f.v.x.mul(V)),f.u.y.mul(U).add(f.v.y.mul(V)),f.u.z.mul(U).add(f.v.z.mul(V)));
+    for(const sign of [-1,1] as const){
+      const value=root.affine(BigInt(sign),c).sign();
+      // An already observed sign cannot change the result. Avoid constructing
+      // algebraic points and testing arc membership for those extrema.
+      if(value<0&&negative||value>0&&positive||value===0&&zero)continue;
+      const point=algebraicPoint3(f.origin,direction,sign===1?root:root.neg());
+      if(pointOnCurve3(point,curve))record(value);
+      if(negative&&positive)return {kind:'split'};
+    }
+  }
+  if(!negative&&!positive)throw new Error('A nonempty full-dimensional solid cannot lie in a plane');
+  return {kind:zero?'touching':'disjoint',materialSide:negative?-1:1};
+}
+/** Internal owned-solid partition. Certify one-sided cuts on the existing
+ * boundary before constructing children, avoiding degenerate trim assembly.
+ */
+export function partitionClippedCylinderBRep3(input:ClippedCylinderBRep3,plane:Plane3):
+  {readonly negative:ClippedCylinderBRep3;readonly positive:ClippedCylinderBRep3;readonly relation:CylinderPlaneRelation3} {
+  assertOwnedClippedCylinder3(input);
+  if(input.empty)throw new RangeError('Boundary partition requires a nonempty parent');
+  const relation=planeRelation(input,plane);
+  if(relation.kind==='split'){
+    const prior=input.planes.map(plane=>({plane,side:-1 as const})),negative=clipCylinderBRep3(input.cylinder,input.lower,input.upper,[...prior,{plane,side:-1}]),positive=clipCylinderBRep3(input.cylinder,input.lower,input.upper,[...prior,{plane,side:1}]);
+    if(negative.empty||positive.empty)throw new Error('Boundary plane classification disagrees with the constructed children');
+    return {negative,positive,relation};
+  }
+  if(evaluate(plane,snapshotExactPoint3(input.interiorSample!)).sign()!==relation.materialSide)throw new Error('One-sided boundary classification disagrees with the interior witness');
+  // Only the rejected side is regularized empty. Keep precisely its original
+  // inequalities plus the new outward halfspace, including normalization.
+  const rejected=normalize(relation.materialSide===-1?negate(plane):plane),records=new Map(input.planes.map(p=>[key(p),p]));records.set(key(rejected),rejected);
+  const planes=Object.freeze([...records.entries()].sort(([a],[b])=>a<b?-1:a>b?1:0).map(([,p])=>p)),sewing=sewBRepFaces3([],{requireClosed:true});
+  const empty:ClippedCylinderBRep3=Object.freeze({cylinder:input.cylinder,lower:input.lower,upper:input.upper,planes,empty:true,faces:Object.freeze([]),topology:sewing.topology,sewing,interiorSample:null,locate:()=> 'outside' as const});
+  ownedSolids.add(empty);
+  return relation.materialSide===-1?{negative:input,positive:empty,relation}:{negative:empty,positive:input,relation};
 }

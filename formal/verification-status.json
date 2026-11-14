@@ -58,9 +58,9 @@
     "src/geometry/planar-trim-utils3.ts": "6baa73a7ce76e0126c1eaf05ea516d6af5475e1906da9e1535b42f0f4c506360",
     "src/geometry/trimmed-planar3.ts": "61179bd5a5100884d2bba8ecfd116036aa9e22d578cd35f92041eca105e91c02",
     "src/geometry/sew-brep3.ts": "106f56ef4c9da55d36f7ab797bd8a81e3baaec26faf05b9b4b26280ce5dffe9b",
-    "src/geometry/clipped-cylinder-brep3.ts": "5c2620607e5a1d0f0edc462d597f605ac84bfcdf1b1b004836a38eb84d070849",
+    "src/geometry/clipped-cylinder-brep3.ts": "22ef0dfc544a9fe9e0891412f14977218766bbc60bca929b3f5347b85752131b",
     "src/geometry/convex-section-polygon3.ts": "7073ec307dc471fbd9ece6b9345cd6466e0e8e3cb90543a782b374d13bd12843",
-    "src/geometry/clipped-cylinder-split3.ts": "d858b3cf528f494c60ea13fbc50dd6a63934e1af3b6043dccbe0904463aa3466"
+    "src/geometry/clipped-cylinder-split3.ts": "884fb3ad64d96ca5f745ac706f2ca934c3851e8ec19eb1ec8b321212aa861744"
   },
   "checkedTheorems": [
     "Cadloom.gcdLoop_correct",
@@ -230,6 +230,6 @@
     "Reusable rational-plane halfspace trims on finite cylinder product domains, critical-angle fiber envelopes, connected-interior extraction, per-component boundary ownership, component extraction and repeated splitting use documented construction arguments and independent tests, not machine-verified TypeScript. Self-contacting boundary germ pairing, arbitrary curved trims, planar-domain splitting and shell sewing remain future work.",
     "Ellipse disk face construction, planar rational-halfspace trims, exact vertical/horizontal slicing, no-event adjacency/component labeling, boundary ownership and repeated planar splitting use documented construction arguments and independent tests, not full TypeScript verification. BigInt square-root candidate computation and quadratic-certificate optimizations are checked by exact identities/tests, not runtime proofs. Arbitrary curved clipping, individual planar component extraction and cap/wall sewing remain future work; some skew algebraic cases remain expensive.",
     "Endpoint-complete analytic boundary sewing, provenance, exact convex cylinder/halfspace solid construction, planar containment certificates, disk-patch decomposition, outward normals, interior-witness searches and closed-shell/Euler audits use documented construction arguments and independent tests, not full TypeScript verification. Generic sewing does not discover unprovided interior/interior curve crossings or certify arbitrary face embedding; the solid constructor is limited to a filled circular cylinder and rational halfspaces, with general curved Booleans remaining future work.",
-    "Closed convex cylinder/halfspace plane splits, common-cap edge correspondence, face provenance, exact supporting contacts and inverse-split boundary rejoining use documented arguments and independent tests, not full TypeScript verification. This does not implement arbitrary solid union or cylinder/cylinder intersections."
+    "Closed convex cylinder/halfspace plane splits, common-cap edge correspondence, face provenance, exact boundary-extrema plane classification and supporting contacts and inverse-split boundary rejoining use documented arguments and independent tests, not full TypeScript verification. This does not implement arbitrary solid union or cylinder/cylinder intersections."
   ]
 }
