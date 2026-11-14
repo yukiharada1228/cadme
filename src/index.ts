@@ -121,3 +121,6 @@ export type { NurbsCurve3, NurbsSpan3, NurbsKnotSide3, NurbsPlanePoint3, NurbsPl
 export { BivariatePolynomial } from './numeric/bivariate-polynomial.js';
 export { nurbsSurface3, nurbsSurfacePatches3, evaluateNurbsSurface3, differentialNurbsSurface3, nurbsSurfaceIsoCurve3, insertNurbsSurfaceKnot3, splitNurbsSurface3, reverseNurbsSurface3, nurbsSurfacePlaneEquations3, nurbsSurfaceOnPlane3 } from './geometry/nurbs-surface3.js';
 export type { NurbsDirection3, NurbsSurfaceSides3, NurbsSurface3, NurbsSurfacePatch3, NurbsSurfaceDifferential3, NurbsSurfaceSplit3 } from './geometry/nurbs-surface3.js';
+
+export { divideBivariateExact, gcdBivariate, resultantBivariate, solveBivariateSystem } from './numeric/bivariate-system.js';
+export type { BivariateRoot, BivariateSystemSolutions } from './numeric/bivariate-system.js';

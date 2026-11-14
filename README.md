@@ -921,3 +921,27 @@ split.continuous; // 両側の境界曲線が同じパラメータで一致
 npm run build
 node examples/nurbs-surface3.ts
 ```
+
+## 2変数の代数方程式系
+
+`solveBivariateSystem(F, G)`は有理係数多項式の共通ゼロ集合を、共通因子の暗黙的なゼロ集合と、その外側の孤立交点に分けます。
+孤立交点は代数的実数の座標として保持し、消去式で生じる余分な候補は元の方程式で厳密に除外します。
+
+```ts
+const U = new BivariatePolynomial([[], [1n]]);
+const V = new BivariatePolynomial([[0n, 1n]]);
+const one = new BivariatePolynomial([[1n]]);
+const circle = U.mul(U).add(V.mul(V)).sub(one);
+const result = solveBivariateSystem(circle, U.sub(V));
+result.points.length; // 2: (±sqrt(1/2), ±sqrt(1/2))、同符号
+```
+
+`gcdBivariate`・`divideBivariateExact`・`resultantBivariate`も利用できます。
+共通因子には実曲線だけでなく、実点を持たない式や孤立した実点を表す式も含まれます。
+共通因子の実ゼロ集合の形状・接続はまだ展開せず、その内部の孤立点も暗黙的な式に保持します。
+交線の追跡やB-repへの接続には追加の処理が必要です。[計算法・完全性・検証範囲](docs/proofs/bivariate-system.md)を参照してください。
+
+```sh
+npm run build
+node examples/bivariate-system.ts
+```
