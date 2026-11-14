@@ -6,7 +6,7 @@
     "src/geometry/point2.ts": "a270ddbf2e31f1484c4ce5d1c6063270762eb38d12597b88f182abcac2f73720",
     "src/geometry/segment-intersection.ts": "d8ef28382ec750e9c15c525099750b1f5cfa5b70cdb0bd738ddb9de666119a10",
     "src/geometry/split-segments.ts": "31ed98ff6bb73e9052cfab8a768b635265feacc4d8e80172f9baffbc28a290ec",
-    "src/index.ts": "4d0ddfbdaaf03daea10d6bf52d60f0cc045dd4683d3aeaf6038e333648e4883c",
+    "src/index.ts": "67d4ffce81ba834c1ec9bc50f39ebd8215e7a3df52ce6290762b1072559024cd",
     "src/numeric/rational.ts": "1fa7b80f2a85aadec80de904ae0e848f4b1db59a6fb4fb04829e7c00fb2f6710",
     "src/geometry/half-edges.ts": "3c983bc7e023ae735692b664c1f4d82950a8dc3e9b894cf95bbf4b324ad304f6",
     "src/geometry/faces.ts": "29f68746129154f1a6fc16bd44a8db71393de443ee583aff401b1436c4274547",
@@ -61,7 +61,9 @@
     "src/geometry/clipped-cylinder-brep3.ts": "22ef0dfc544a9fe9e0891412f14977218766bbc60bca929b3f5347b85752131b",
     "src/geometry/convex-section-polygon3.ts": "7073ec307dc471fbd9ece6b9345cd6466e0e8e3cb90543a782b374d13bd12843",
     "src/geometry/clipped-cylinder-split3.ts": "884fb3ad64d96ca5f745ac706f2ca934c3851e8ec19eb1ec8b321212aa861744",
-    "src/geometry/nurbs-curve3.ts": "1274ae72d6ac2f4894bbeacf8a1d0750f4e74178051801eb25344d65bd39555f"
+    "src/geometry/nurbs-curve3.ts": "dec7d701dff5e65bfebb5147fff29855197c96b22294c8213c22c166f39b6bc1",
+    "src/numeric/bivariate-polynomial.ts": "64e47bc358b7829b91e7f0f29854361327d73dc17f2a7dc6f9ebffa9958733c1",
+    "src/geometry/nurbs-surface3.ts": "5e1dbbbdf4c6a2fa3e6b6bcbc5e4069e00b154e4ea4ce9220d482b3e159f5d04"
   },
   "checkedTheorems": [
     "Cadloom.gcdLoop_correct",
@@ -233,6 +235,7 @@
     "Ellipse disk face construction, planar rational-halfspace trims, exact vertical/horizontal slicing, no-event adjacency/component labeling, boundary ownership and repeated planar splitting use documented construction arguments and independent tests, not full TypeScript verification. BigInt square-root candidate computation and quadratic-certificate optimizations are checked by exact identities/tests, not runtime proofs. Arbitrary curved clipping, individual planar component extraction and cap/wall sewing remain future work; some skew algebraic cases remain expensive.",
     "Endpoint-complete analytic boundary sewing, provenance, exact convex cylinder/halfspace solid construction, planar containment certificates, disk-patch decomposition, outward normals, interior-witness searches and closed-shell/Euler audits use documented construction arguments and independent tests, not full TypeScript verification. Generic sewing does not discover unprovided interior/interior curve crossings or certify arbitrary face embedding; the solid constructor is limited to a filled circular cylinder and rational halfspaces, with general curved Booleans remaining future work.",
     "Closed convex cylinder/halfspace plane splits, common-cap edge correspondence, face provenance, exact boundary-extrema plane classification and supporting contacts and inverse-split boundary rejoining use documented arguments and independent tests, not full TypeScript verification. This does not implement arbitrary solid union or cylinder/cylinder intersections.",
-    "Rational positive-weight nonperiodic NURBS span compilation, one-sided evaluation/derivatives, rational knot insertion/splitting/reversal and exact plane intersections use documented arguments and independent polynomial-basis/shape tests, not full TypeScript verification. The generic positive-blend lemma is checked in Lean; full basis refinement, compiler/runtime semantics, NURBS surfaces, general curve intersections and BRep integration remain outside scope."
+    "Rational positive-weight nonperiodic NURBS span compilation, one-sided evaluation/derivatives, rational knot insertion/splitting/reversal and exact plane intersections use documented arguments and independent polynomial-basis/shape tests, not full TypeScript verification. The generic positive-blend lemma is checked in Lean; full basis refinement, compiler/runtime semantics, NURBS surfaces, general curve intersections and BRep integration remain outside scope.",
+    "Positive rational tensor-product NURBS surfaces, bivariate polynomial arithmetic, algebraic evaluation, partials/local normals, rational isocurves, direction-wise refinement/splitting/reversal and exact plane restriction/containment use documented arguments and independent tensor-coefficient/shape tests. Existing positive-blend mathematics is reused; TypeScript execution, global regularity/embedding, zero-set tracing, trimmed BRep integration and file import are not proved or supplied by this layer."
   ]
 }

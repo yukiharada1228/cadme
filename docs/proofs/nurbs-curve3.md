@@ -76,8 +76,9 @@ Circle tangency and coincident-span fixtures check the set assembly.
 
 The source baseline and selected Lean lemma are not a proof of the whole
 NURBS implementation. General curve/curve and surface intersections,
-NURBS surface patches, geometric simplicity/regularity certification,
-trimmed BRep integration and commercial CAD file import remain future work.
+geometric simplicity/regularity certification, trimmed BRep integration
+and commercial CAD file import remain future work. Tensor-product surface
+geometry is supplied separately by [nurbsSurface3](nurbs-surface3.md).
 These curves are consequently a separate parameterized-geometry API;
 they are not yet accepted as the existing `Curve3` BRep edge variants.
 High degree and algebraic operations may cause large exact coefficients.
